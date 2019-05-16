@@ -11,23 +11,19 @@ public class BirdController : MonoBehaviour
     public float forwardSpeed = 10;
     public float turnSpeedMultiplier = 1;
     public float flapMultiplier = 350f;
-    public float diveMultiplier = 50f;
+    public float armsInDiveMultiplier = 50f;
     public float divingTreshold = .95f;
+    public float headDownDiveMultiplier = 5f;
+    public float headUpAscendMultiplier = 5f;
 
     public Transform headTransform;
     public Transform leftHandTransform;
     public Transform rightHandTransform;
     
-
     Rigidbody rb;
 
     float widestReach = 0;
 
-    float leftFlapPower;
-    float rightFlapPower;
-    float combinedFlapPower;
-    float leftWingHeight;
-    float rightWingHeight;
     float prevLeftWingHeight;
     float prevRightWingHeight;
     
@@ -56,26 +52,30 @@ public class BirdController : MonoBehaviour
         
         Vector3 flyForce = new Vector3();
 
-        leftWingHeight = leftHandTransform.position.y;
-        rightWingHeight = rightHandTransform.position.y;
-
-        //steer, maybe with head, maybe not
-        Transform steeringTransform = useHeadToSteer ? headTransform : transform;;
-        Vector3 flyDir = steeringTransform.forward;
-        flyForce += flyDir * forwardSpeed;
-
-        //add head direction to only vertical movements
-        Vector3 verticalHeadDir = new Vector3(0, headTransform.forward.y, 0);
-        flyForce += verticalHeadDir * forwardSpeed;
-
-        
+        float leftWingHeight = leftHandTransform.position.y;
+        float rightWingHeight = rightHandTransform.position.y;
 
         //calculate reach and wing height
         float reach = rightHandTransform.localPosition.x - leftHandTransform.localPosition.x;
         widestReach = Mathf.Max(widestReach, reach);
         float reachPrecent = reach / widestReach;
 
-        
+        //steer, maybe with head, maybe not
+        Transform steeringTransform = useHeadToSteer ? headTransform : transform;
+        Vector3 flyDir = steeringTransform.forward;
+        flyForce += flyDir * forwardSpeed * reachPrecent;
+
+        //add head direction to only downward vertical movements 
+        float headDirection = headTransform.forward.y;
+        Vector3 verticalHeadDir = new Vector3(0, headDirection, 0);
+        if(headTransform.forward.y > 0)
+        {
+            flyForce += verticalHeadDir * (headUpAscendMultiplier * reachPrecent);
+        }
+        else
+        {
+            flyForce += verticalHeadDir * (headDownDiveMultiplier * (1 - reachPrecent));
+        }        
 
         if(controllersActivated)
         {
@@ -85,16 +85,15 @@ public class BirdController : MonoBehaviour
             transform.Rotate(0, turnAmount, 0);
 
             //flap wings to gain altitude
-            
-            leftFlapPower = Mathf.Max(0, prevLeftWingHeight - leftWingHeight);
-            rightFlapPower = Mathf.Max(0, prevRightWingHeight - rightWingHeight);
-            combinedFlapPower = (leftFlapPower + rightFlapPower) * flapMultiplier;
-            Vector3 flapForce = new Vector3(0, combinedFlapPower, 0);
+            float leftFlapPower = Mathf.Max(0, prevLeftWingHeight - leftWingHeight);
+            float rightFlapPower = Mathf.Max(0, prevRightWingHeight - rightWingHeight);
+            float combinedFlapPower = (leftFlapPower + rightFlapPower) * flapMultiplier;
+            Vector3 flapForce = transform.forward * combinedFlapPower;
             flyForce += flapForce;
             
             
             //bring arms in to dive (fully outstretched will slightly gain altitude)
-            float divePower = (divingTreshold - reachPrecent) * diveMultiplier;
+            float divePower = (divingTreshold - reachPrecent) * armsInDiveMultiplier;
             Vector3 diveForce = new Vector3(0, -divePower, 0);
             flyForce += diveForce;
         }

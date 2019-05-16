@@ -299,11 +299,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useHeadToSteer: 0
   flapToGainAltitude: 1
-  forwardSpeed: 10
+  forwardSpeed: 17
   turnSpeedMultiplier: 1
-  flapMultiplier: 450
-  diveMultiplier: 50
+  flapMultiplier: 70
+  armsInDiveMultiplier: 20
   divingTreshold: 0.9
+  headDownDiveMultiplier: 20
+  headUpAscendMultiplier: 5
   headTransform: {fileID: 482659488}
   leftHandTransform: {fileID: 843943143}
   rightHandTransform: {fileID: 791933884}
