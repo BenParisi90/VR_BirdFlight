@@ -21,8 +21,10 @@ public class BirdController : MonoBehaviour
     public Transform rightHandTransform;
     
     Rigidbody rb;
+    AudioSource windSound;
 
     float widestReach = 0;
+    float maxVelocity = 0;
 
     float prevLeftWingHeight;
     float prevRightWingHeight;
@@ -36,6 +38,8 @@ public class BirdController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        windSound = GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
@@ -52,13 +56,16 @@ public class BirdController : MonoBehaviour
         
         Vector3 flyForce = new Vector3();
 
+        //calculate reach and wing height
         float leftWingHeight = leftHandTransform.position.y;
         float rightWingHeight = rightHandTransform.position.y;
-
-        //calculate reach and wing height
         float reach = rightHandTransform.localPosition.x - leftHandTransform.localPosition.x;
         widestReach = Mathf.Max(widestReach, reach);
         float reachPrecent = reach / widestReach;
+
+        //set the wind sound based on the max velocity
+        maxVelocity = Mathf.Max(maxVelocity, rb.velocity.magnitude);
+        windSound.volume = rb.velocity.magnitude / maxVelocity;
 
         //steer, maybe with head, maybe not
         Transform steeringTransform = useHeadToSteer ? headTransform : transform;
