@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.vr_birdflight_unity.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "D:\\GitRoot\\VR_BirdFlight\\VR_BirdFlight_Unity\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "VR_BirdFlight_Unity [Testing]"
+        }
+      }
+    }
+  ]
+}
