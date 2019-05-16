@@ -7,6 +7,7 @@ public class BirdController : MonoBehaviour
     public bool useHeadToSteer = false;
 
     public float forwardSpeed = 10;
+    public float turnSpeedMultiplier = .05f;
 
     public Transform headTransform;
     public Transform leftHandTransform;
@@ -14,6 +15,8 @@ public class BirdController : MonoBehaviour
     
 
     Rigidbody rb;
+
+    float widestReach = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -30,16 +33,13 @@ public class BirdController : MonoBehaviour
     void FixedUpdate()
     {
         Transform steeringTransform;
-        if(useHeadToSteer)
-        {
-            steeringTransform = headTransform;
-        }
-        else
-        {
-            steeringTransform = transform;
-        }
+        float handVertOffset = leftHandTransform.position.y - rightHandTransform.position.y;
+        steeringTransform = useHeadToSteer ? headTransform : transform;
         Vector3 flyDir = steeringTransform.forward;
         Vector3 flyForce = flyDir * forwardSpeed;
         rb.AddForce(flyForce);
+        Quaternion newRotation = transform.rotation;
+        newRotation.y += handVertOffset * turnSpeedMultiplier;
+        transform.rotation = newRotation;
     }
 }
