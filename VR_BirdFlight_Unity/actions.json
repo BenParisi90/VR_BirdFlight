@@ -41,6 +41,14 @@
       "requirement": "optional"
     },
     {
+      "name": "/actions/default/in/ActivateLeft",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/ActivateRight",
+      "type": "boolean"
+    },
+    {
       "name": "/actions/default/out/Haptic",
       "type": "vibration"
     },
